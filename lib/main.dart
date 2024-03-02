@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Segoe UI',
       ),
       home: const MyHomePage(title: 'DayByDay'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -50,8 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void deleteTask(int index) {
+    Task deletedTask = tasks.removeAt(index);
     setState(() {
-      tasks.removeAt(index);
+      tasks.add(deletedTask);
     });
   }
 
@@ -60,6 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        centerTitle: true,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,37 +75,42 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                if (!tasks[index].completed) {
-                  return Dismissible(
-                    key: Key(tasks[index].title),
-                    onDismissed: (direction) {
-                      setState(() {
-                        tasks[index].completed = true;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Task completed!'),
-                        duration: Duration(seconds: 2),
-                      ));
-                    },
-                    background: Container(color: Colors.red),
-                    child: ListTile(
-                      title: Text(
-                        tasks[index].title,
-                        style: TextStyle(color: Colors.black),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              margin: EdgeInsets.all(8),
+              child: ListView.builder(
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  if (!tasks[index].completed) {
+                    return Dismissible(
+                      key: Key(tasks[index].title),
+                      onDismissed: (direction) {
+                        deleteTask(index);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Task completed!'),
+                          duration: Duration(seconds: 2),
+                        ));
+                      },
+                      background: Container(color: Colors.red),
+                      child: ListTile(
+                        title: Text(
+                          tasks[index].title,
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => deleteTask(index),
+                        ),
                       ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => deleteTask(index),
-                      ),
-                    ),
-                  );
-                } else {
-                  return SizedBox.shrink();
-                }
-              },
+                    );
+                  } else {
+                    return SizedBox.shrink();
+                  }
+                },
+              ),
             ),
           ),
           Padding(
@@ -113,29 +121,36 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                if (tasks[index].completed) {
-                  return Dismissible(
-                    key: Key(tasks[index].title),
-                    onDismissed: (direction) => deleteTask(index),
-                    background: Container(color: Colors.red),
-                    child: ListTile(
-                      title: Text(
-                        tasks[index].title,
-                        style: TextStyle(color: Colors.black),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              margin: EdgeInsets.all(8),
+              child: ListView.builder(
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  if (tasks[index].completed) {
+                    return Dismissible(
+                      key: Key(tasks[index].title),
+                      onDismissed: (direction) => deleteTask(index),
+                      background: Container(color: Colors.red),
+                      child: ListTile(
+                        title: Text(
+                          tasks[index].title,
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => deleteTask(index),
+                        ),
                       ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => deleteTask(index),
-                      ),
-                    ),
-                  );
-                } else {
-                  return SizedBox.shrink();
-                }
-              },
+                    );
+                  } else {
+                    return SizedBox.shrink();
+                  }
+                },
+              ),
             ),
           ),
         ],
